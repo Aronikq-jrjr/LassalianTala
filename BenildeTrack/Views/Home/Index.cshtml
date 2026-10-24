@@ -1,0 +1,7 @@
+@{ ViewData["Title"] = "Home"; }
+<h1>BenildeTrack</h1>
+<p>Student records tracker.</p>
+@if (User.Identity?.IsAuthenticated != true)
+{
+    <p><a asp-controller="Account" asp-action="Login">Log in</a> to continue.</p>
+}
