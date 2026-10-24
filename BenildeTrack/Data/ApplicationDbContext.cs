@@ -13,6 +13,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Absence> Absences => Set<Absence>();
     public DbSet<ExcuseDocument> ExcuseDocuments => Set<ExcuseDocument>();
 
+    public DbSet<HandbookOffense> HandbookOffenses => Set<HandbookOffense>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

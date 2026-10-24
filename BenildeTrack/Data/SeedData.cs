@@ -1,5 +1,7 @@
+using System.Text.Json;
 using BenildeTrack.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BenildeTrack.Data;
 
@@ -12,7 +14,6 @@ public static class SeedData
     public static async Task InitializeAsync(IServiceProvider services)
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
-        // Creates the SQLite file and tables if they don't exist yet.
         await db.Database.EnsureCreatedAsync();
 
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -35,6 +36,24 @@ public static class SeedData
             var result = await userManager.CreateAsync(admin, AdminPassword);
             if (result.Succeeded)
                 await userManager.AddToRoleAsync(admin, AppRoles.Administrator);
+        }
+
+        // Load the handbook offense list once.
+        if (!await db.HandbookOffenses.AnyAsync())
+        {
+            var env = services.GetRequiredService<IWebHostEnvironment>();
+            var path = Path.Combine(env.ContentRootPath, "Data", "handbook_offenses.json");
+            if (File.Exists(path))
+            {
+                var items = JsonSerializer.Deserialize<List<HandbookOffense>>(
+                    File.ReadAllText(path),
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (items != null)
+                {
+                    db.HandbookOffenses.AddRange(items);
+                    await db.SaveChangesAsync();
+                }
+            }
         }
     }
 }
