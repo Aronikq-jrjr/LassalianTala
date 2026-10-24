@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BenildeTrack</title>
+</head>
+<body>
+    <header>
+        <h2>BenildeTrack</h2>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <text> | </text><a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+            }
+            @if (User.IsInRole(AppRoles.Administrator))
+            {
+                <text> | </text><a asp-controller="Users" asp-action="Index">User Accounts</a>
+                <text> | </text><a asp-controller="Users" asp-action="Index" asp-route-role="Student">Students</a>
+                <text> | </text><a asp-controller="Classes" asp-action="Index">Classes</a>
+            }
+            @if (User.IsInRole(AppRoles.Administrator) || User.IsInRole(AppRoles.Student))
+            {
+                <text> | </text><a asp-controller="Violations" asp-action="Index">Violations</a>
+            }
+            @if (User.IsInRole(AppRoles.Professor) || User.IsInRole(AppRoles.Student))
+            {
+                <text> | </text><a asp-controller="Absences" asp-action="Index">Absences</a>
+                <text> | </text><a asp-controller="ExcuseDocuments" asp-action="Index">Excuse Documents</a>
+            }
+            <text> | </text>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
+                    <button type="submit">Logout (@User.Identity.Name)</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">Login</a>
+            }
+        </nav>
+        <hr />
+    </header>
+    <main>
+        @if (TempData["Error"] != null)
+        {
+            <p style="color:red">@TempData["Error"]</p>
+        }
+        @RenderBody()
+    </main>
+</body>
+</html>
